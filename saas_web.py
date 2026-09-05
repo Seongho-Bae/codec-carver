@@ -224,8 +224,13 @@ HTML_TEMPLATE = """
                 input.setCustomValidity('');
                 input.removeAttribute('aria-invalid');
                 preview.style.color = '#0f6674';
+                preview.classList.remove('required-star');
                 if (!file) {
-                    preview.innerText = '';
+                    preview.innerText = 'This field is required.';
+                    preview.style.color = '';
+                    preview.classList.add('required-star');
+                    input.setCustomValidity('This field is required.');
+                    input.setAttribute('aria-invalid', 'true');
                     return;
                 }
                 const text = formatBinaryBytes(file.size);
@@ -246,6 +251,7 @@ HTML_TEMPLATE = """
                 this.setCustomValidity('');
                 this.removeAttribute('aria-invalid');
                 preview.style.color = '#1e7e34';
+                preview.classList.remove('required-star');
 
                 const buttons = document.querySelectorAll('#preset_buttons_container .preset-btn');
                 buttons.forEach(btn => {
@@ -257,9 +263,11 @@ HTML_TEMPLATE = """
                 });
 
                 if (this.value === '') {
-                    preview.innerText = '';
-                    this.setCustomValidity('');
-                    this.removeAttribute('aria-invalid');
+                    preview.innerText = 'This field is required.';
+                    preview.style.color = '';
+                    preview.classList.add('required-star');
+                    this.setCustomValidity('This field is required.');
+                    this.setAttribute('aria-invalid', 'true');
                     return;
                 }
 
@@ -280,6 +288,7 @@ HTML_TEMPLATE = """
                 this.setCustomValidity('');
                 this.removeAttribute('aria-invalid');
                 preview.style.color = '#1e7e34';
+                preview.classList.remove('required-star');
 
                 const buttons = document.querySelectorAll('#batch_preset_buttons_container .preset-btn');
                 buttons.forEach(btn => {
@@ -291,9 +300,11 @@ HTML_TEMPLATE = """
                 });
 
                 if (this.value === '') {
-                    preview.innerText = '';
-                    this.setCustomValidity('');
-                    this.removeAttribute('aria-invalid');
+                    preview.innerText = 'This field is required.';
+                    preview.style.color = '';
+                    preview.classList.add('required-star');
+                    this.setCustomValidity('This field is required.');
+                    this.setAttribute('aria-invalid', 'true');
                     return;
                 }
 
@@ -321,10 +332,15 @@ HTML_TEMPLATE = """
                 input.setCustomValidity('');
                 input.removeAttribute('aria-invalid');
                 preview.style.color = '#0f6674';
+                preview.classList.remove('required-star');
 
                 const files = input.files;
                 if (!files || files.length === 0) {
-                    preview.innerText = '';
+                    preview.innerText = 'This field is required.';
+                    preview.style.color = '';
+                    preview.classList.add('required-star');
+                    input.setCustomValidity('This field is required.');
+                    input.setAttribute('aria-invalid', 'true');
                     return;
                 }
 
