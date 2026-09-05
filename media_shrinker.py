@@ -927,7 +927,7 @@ def preserve_file_attributes(
 
     source = Path(source)
     dest = Path(dest)
-    source_stat = source.stat()
+    source_stat = os.stat(source)
 
     try:
         os.chmod(dest, stat.S_IMODE(source_stat.st_mode) & 0o777)
@@ -1063,7 +1063,7 @@ def safe_source_size(source: Path) -> int:
     """Return source size for reports without letting stat failures abort a batch."""
 
     try:
-        return Path(source).stat().st_size
+        return os.stat(source).st_size
     except OSError:
         return 0
 
@@ -1089,7 +1089,7 @@ def _find_valid_existing_output(
         # Fast path: Rely on stat() throwing OSError to check existence and get size simultaneously,
         # avoiding a redundant exists() syscall. Also defers collision checks for non-existent files.
         try:
-            candidate_size = candidate.stat().st_size
+            candidate_size = os.stat(candidate).st_size
         except OSError:
             continue
         _ensure_not_source_path(source, candidate)
@@ -1184,7 +1184,7 @@ def _execute_segment_conversion(
         overwrite=overwrite,
         protected_sources=resolved_protected_sources,
     )
-    output_size = first_result.stat().st_size
+    output_size = os.stat(first_result).st_size
     if output_size > target_bytes and plan.strategy in {
         "flac-lossless",
         "flac-transcode",
@@ -1212,7 +1212,7 @@ def _execute_segment_conversion(
             protected_sources=resolved_protected_sources,
         )
         plan = opus_plan
-        output_size = first_result.stat().st_size
+        output_size = os.stat(first_result).st_size
 
     try:
         output_duration = _probe_output_duration(
@@ -1393,7 +1393,7 @@ def _remove_invalid_legacy_outputs(
         # Fast path: Rely on stat() throwing OSError to check existence and get size simultaneously,
         # avoiding a redundant exists() syscall. Also defers collision checks for non-existent files.
         try:
-            legacy_size = legacy_output.stat().st_size
+            legacy_size = os.stat(legacy_output).st_size
         except OSError:
             continue
         _ensure_not_source_path(source, legacy_output)
@@ -2090,7 +2090,7 @@ def _parse_probe_payload(
     parsed_size = _first_int(format_section.get("size"))
     if parsed_size is None:
         parsed_size = (
-            source_size if source_size is not None else source_path.stat().st_size
+            source_size if source_size is not None else os.stat(source_path).st_size
         )
 
     audio_bit_rate = _first_int(
