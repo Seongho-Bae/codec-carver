@@ -7,7 +7,7 @@
 **Action:** Replace `rglob` with `os.walk`, modifying `dirnames` in-place to prune excluded folders directly, resulting in orders of magnitude speedups depending on search depth and amount of un-traversable folders.
 
 ## 2024-05-29 - [Unit Test Add: _first_int in media_shrinker]
-**Learning:** Even simple utility functions like `_first_int` benefit from explicit tests of edge cases, particularly their exception handling blocks which often go uncovered. Placing tests before `if __name__ == "__main__":` ensures compatibility with all test execution methods and script execution paradigms.
+**Learning:** Even simple utility functions like `_first_int` benefit from explicit tests of edge cases, particularly their exception handling blocks which often go uncovered. Placing tests before `if __name__ == "__main__":` ensures compatibility with all test execution methods.
 **Action:** Always verify test file structure when appending new test classes to ensure they run correctly within the target test framework and script execution paradigms.
 
 ## 2024-05-15 - Unsafe Path Resolution Optimization
