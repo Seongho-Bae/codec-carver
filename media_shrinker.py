@@ -2202,11 +2202,17 @@ def _ensure_not_source_path(source: Path, output: Path) -> None:
 
 def _resolve_collision(path: Path, *, overwrite: bool) -> Path:
     """Return path or a numbered variant if path already exists."""
-    if overwrite or not path.exists():
+    if overwrite:
         return path
 
     # Invariant: Only ENOENT proves a candidate is completely free.
     # Dangling symlinks or files with access errors remain occupied (fail-closed).
+    try:
+        os.lstat(path)
+    except OSError as exc:
+        if exc.errno == errno.ENOENT:
+            return path
+
     parent_str = str(path.parent)
     stem_str = path.stem
     suffix_str = path.suffix
