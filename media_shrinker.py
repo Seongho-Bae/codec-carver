@@ -11,6 +11,7 @@ import argparse
 import functools
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
+import errno
 import math
 import os
 import re
@@ -2201,12 +2202,30 @@ def _ensure_not_source_path(source: Path, output: Path) -> None:
 
 def _resolve_collision(path: Path, *, overwrite: bool) -> Path:
     """Return path or a numbered variant if path already exists."""
-    if overwrite or not path.exists():
+    if overwrite:
         return path
+
+    # Invariant: Only ENOENT proves a candidate is completely free.
+    # Dangling symlinks or files with access errors remain occupied (fail-closed).
+    try:
+        os.lstat(path)
+    except OSError as exc:
+        if exc.errno == errno.ENOENT:
+            return path
+
+    parent_str = str(path.parent)
+    stem_str = path.stem
+    suffix_str = path.suffix
+
     for index in range(1, 10_000):
-        candidate = path.with_name(f"{path.stem}-{index}{path.suffix}")
-        if not candidate.exists():
-            return candidate
+        candidate_str = os.path.join(parent_str, f"{stem_str}-{index}{suffix_str}")
+        try:
+            os.lstat(candidate_str)
+        except OSError as exc:
+            if exc.errno == errno.ENOENT:
+                return Path(candidate_str)
+            continue
+
     raise FileExistsError(f"Could not find free output path for {path}")
 
 

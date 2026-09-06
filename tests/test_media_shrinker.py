@@ -227,7 +227,6 @@ class FindCandidateTests(unittest.TestCase):
             nested.write_bytes(b"0" * 4)
 
             import os
-
             original_lstat = os.lstat
 
             def flaky_lstat(path):
@@ -1772,6 +1771,65 @@ class CollisionResolutionTests(unittest.TestCase):
             resolved = media_shrinker._resolve_collision(path, overwrite=True)
             self.assertEqual(resolved, path)
 
+    def test_resolve_collision_handles_dangling_symlinks_on_original_path(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "existing.flac"
+            path.symlink_to("does_not_exist.flac")
+            resolved = media_shrinker._resolve_collision(path, overwrite=False)
+            self.assertEqual(resolved, Path(tmp) / "existing-1.flac")
+
+    def test_resolve_collision_handles_permission_errors_on_original_path(self) -> None:
+        import errno
+        original_lstat = os.lstat
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "existing.flac"
+
+            def side_effect(candidate_str, *args, **kwargs):
+                if str(candidate_str).endswith("existing.flac"):
+                    e = OSError()
+                    e.errno = errno.EACCES
+                    raise e
+                elif "-1.flac" in str(candidate_str):
+                    e = OSError()
+                    e.errno = errno.ENOENT
+                    raise e
+                return original_lstat(candidate_str, *args, **kwargs)
+
+            with patch("os.lstat", side_effect=side_effect):
+                resolved = media_shrinker._resolve_collision(path, overwrite=False)
+                self.assertEqual(resolved, Path(tmp) / "existing-1.flac")
+
+    def test_resolve_collision_handles_dangling_symlinks(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "existing.flac"
+            path.write_bytes(b"data")
+            dangling = Path(tmp) / "existing-1.flac"
+            dangling.symlink_to("does_not_exist.flac")
+            resolved = media_shrinker._resolve_collision(path, overwrite=False)
+            self.assertEqual(resolved, Path(tmp) / "existing-2.flac")
+
+    def test_resolve_collision_handles_permission_errors(self) -> None:
+        import errno
+        original_lstat = os.lstat
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "existing.flac"
+            path.write_bytes(b"data")
+
+            def side_effect(candidate_str, *args, **kwargs):
+                if isinstance(candidate_str, str) and "-1.flac" in candidate_str:
+                    e = OSError()
+                    e.errno = errno.EACCES
+                    raise e
+                elif isinstance(candidate_str, str) and "-2.flac" in candidate_str:
+                    e = OSError()
+                    e.errno = errno.ENOENT
+                    raise e
+                return original_lstat(candidate_str, *args, **kwargs)
+
+            with patch("os.lstat", side_effect=side_effect):
+                resolved = media_shrinker._resolve_collision(path, overwrite=False)
+                self.assertEqual(resolved, Path(tmp) / "existing-2.flac")
+
 
 class CliTests(unittest.TestCase):
     def test_normalize_argv_handles_silence_noise_values(self) -> None:
@@ -2433,7 +2491,7 @@ class CliTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "existing.flac"
             path.write_bytes(b"data")
-            with patch("pathlib.Path.exists", return_value=True):
+            with patch("os.lstat", return_value=True), patch("pathlib.Path.exists", return_value=True):
                 with self.assertRaisesRegex(FileExistsError, "Could not find free"):
                     media_shrinker._resolve_collision(path, overwrite=False)
 
