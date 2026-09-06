@@ -155,6 +155,7 @@ HTML_TEMPLATE = """
         button:focus-visible, input:focus-visible { outline: 2px solid #004085; outline-offset: 2px; }
         .required-star { color: #dc3545; }
         .help-text { color: #6c757d; font-size: 0.85em; display: inline-block; margin-top: 4px; }
+        .help-text.error-text { color: #dc3545; }
         .spinner { display: inline-block; width: 1em; height: 1em; vertical-align: -0.125em; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spinner-border .75s linear infinite; margin-right: 8px; }
         @keyframes spinner-border { to { transform: rotate(360deg); } }
         .box { transition: background-color 0.2s, border-color 0.2s; }
@@ -224,11 +225,11 @@ HTML_TEMPLATE = """
                 input.setCustomValidity('');
                 input.removeAttribute('aria-invalid');
                 preview.style.color = '#0f6674';
-                preview.classList.remove('required-star');
+                preview.classList.remove('error-text');
                 if (!file) {
                     preview.innerText = 'This field is required.';
                     preview.style.color = '';
-                    preview.classList.add('required-star');
+                    preview.classList.add('error-text');
                     input.setCustomValidity('This field is required.');
                     input.setAttribute('aria-invalid', 'true');
                     return;
@@ -265,7 +266,7 @@ HTML_TEMPLATE = """
                 if (this.value === '') {
                     preview.innerText = 'This field is required.';
                     preview.style.color = '';
-                    preview.classList.add('required-star');
+                    preview.classList.add('error-text');
                     this.setCustomValidity('This field is required.');
                     this.setAttribute('aria-invalid', 'true');
                     return;
@@ -273,7 +274,8 @@ HTML_TEMPLATE = """
 
                 if (isNaN(val) || val <= 0) {
                     preview.innerText = 'Must be greater than 0.';
-                    preview.style.color = '#dc3545';
+                    preview.style.color = '';
+                    preview.classList.add('error-text');
                     this.setCustomValidity('Must be greater than 0.');
                     this.setAttribute('aria-invalid', 'true');
                 } else {
@@ -302,7 +304,7 @@ HTML_TEMPLATE = """
                 if (this.value === '') {
                     preview.innerText = 'This field is required.';
                     preview.style.color = '';
-                    preview.classList.add('required-star');
+                    preview.classList.add('error-text');
                     this.setCustomValidity('This field is required.');
                     this.setAttribute('aria-invalid', 'true');
                     return;
@@ -310,7 +312,8 @@ HTML_TEMPLATE = """
 
                 if (isNaN(val) || val <= 0) {
                     preview.innerText = 'Must be greater than 0.';
-                    preview.style.color = '#dc3545';
+                    preview.style.color = '';
+                    preview.classList.add('error-text');
                     this.setCustomValidity('Must be greater than 0.');
                     this.setAttribute('aria-invalid', 'true');
                 } else {
@@ -332,13 +335,13 @@ HTML_TEMPLATE = """
                 input.setCustomValidity('');
                 input.removeAttribute('aria-invalid');
                 preview.style.color = '#0f6674';
-                preview.classList.remove('required-star');
+                preview.classList.remove('error-text');
 
                 const files = input.files;
                 if (!files || files.length === 0) {
                     preview.innerText = 'This field is required.';
                     preview.style.color = '';
-                    preview.classList.add('required-star');
+                    preview.classList.add('error-text');
                     input.setCustomValidity('This field is required.');
                     input.setAttribute('aria-invalid', 'true');
                     return;
