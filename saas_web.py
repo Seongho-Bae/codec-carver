@@ -229,6 +229,13 @@ HTML_TEMPLATE = """
                     return;
                 }
                 const text = formatBinaryBytes(file.size);
+                if (!file.type.startsWith('audio/') && !file.type.startsWith('video/')) {
+                    input.setCustomValidity('Unsupported content type; select an audio or video file.');
+                    input.setAttribute('aria-invalid', 'true');
+                    preview.innerText = 'Selected file type unsupported: ' + file.name;
+                    preview.style.color = '#dc3545';
+                    return;
+                }
                 if (file.size > MAX_UPLOAD_BYTES) {
                     const limitText = formatBinaryBytes(MAX_UPLOAD_BYTES);
                     input.setCustomValidity('File exceeds ' + limitText + ' limit.');
@@ -330,6 +337,13 @@ HTML_TEMPLATE = """
 
                 let totalSize = 0;
                 for (let i = 0; i < files.length; i++) {
+                    if (!files[i].type.startsWith('audio/') && !files[i].type.startsWith('video/')) {
+                        input.setCustomValidity('Unsupported content type; select audio or video files.');
+                        input.setAttribute('aria-invalid', 'true');
+                        preview.innerText = 'Selected file type unsupported: ' + files[i].name;
+                        preview.style.color = '#dc3545';
+                        return;
+                    }
                     totalSize += files[i].size;
                 }
 
