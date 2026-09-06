@@ -688,6 +688,30 @@ class TestApiKeyAuth(unittest.TestCase):
             headers=headers or {},
         )
 
+    def test_non_ascii_header_does_not_crash(self):
+        import asyncio
+        import json
+        from starlette.requests import Request
+        from saas_web import require_api_key
+
+        async def dummy_call_next(request: Request):
+            from starlette.responses import JSONResponse
+            return JSONResponse({"status": "ok"})
+
+        with patch.dict(os.environ, {"CODEC_CARVER_API_KEYS": "secret-key"}):
+            scope = {
+                "type": "http",
+                "method": "POST",
+                "path": "/shrink",
+                "headers": [(b"x-api-key", "secret-key😀".encode("utf-8"))],
+            }
+            req = Request(scope)
+            res = asyncio.new_event_loop().run_until_complete(require_api_key(req, dummy_call_next))
+
+            self.assertEqual(res.status_code, 401)
+            body = json.loads(res.body.decode("utf-8"))
+            self.assertEqual(body, {"error": "Invalid or missing API key"})
+
     def test_no_env_var_leaves_endpoints_open(self):
         with patch.dict(os.environ):
             os.environ.pop("CODEC_CARVER_API_KEYS", None)
