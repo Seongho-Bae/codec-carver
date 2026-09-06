@@ -223,9 +223,14 @@ HTML_TEMPLATE = """
                 const preview = document.getElementById('file_size_preview');
                 input.setCustomValidity('');
                 input.removeAttribute('aria-invalid');
+                preview.classList.remove('required-star');
                 preview.style.color = '#0f6674';
                 if (!file) {
-                    preview.innerText = '';
+                    preview.innerText = 'This field is required.';
+                    preview.style.color = '';
+                    preview.classList.add('required-star');
+                    input.setCustomValidity('This field is required.');
+                    input.setAttribute('aria-invalid', 'true');
                     return;
                 }
                 const text = formatBinaryBytes(file.size);
@@ -245,6 +250,7 @@ HTML_TEMPLATE = """
                 const preview = document.getElementById('target_bytes_preview');
                 this.setCustomValidity('');
                 this.removeAttribute('aria-invalid');
+                preview.classList.remove('required-star');
                 preview.style.color = '#1e7e34';
 
                 const buttons = document.querySelectorAll('#preset_buttons_container .preset-btn');
@@ -257,9 +263,11 @@ HTML_TEMPLATE = """
                 });
 
                 if (this.value === '') {
-                    preview.innerText = '';
-                    this.setCustomValidity('');
-                    this.removeAttribute('aria-invalid');
+                    preview.innerText = 'This field is required.';
+                    preview.style.color = '';
+                    preview.classList.add('required-star');
+                    this.setCustomValidity('This field is required.');
+                    this.setAttribute('aria-invalid', 'true');
                     return;
                 }
 
@@ -279,6 +287,7 @@ HTML_TEMPLATE = """
                 const preview = document.getElementById('batch_target_bytes_preview');
                 this.setCustomValidity('');
                 this.removeAttribute('aria-invalid');
+                preview.classList.remove('required-star');
                 preview.style.color = '#1e7e34';
 
                 const buttons = document.querySelectorAll('#batch_preset_buttons_container .preset-btn');
@@ -291,9 +300,11 @@ HTML_TEMPLATE = """
                 });
 
                 if (this.value === '') {
-                    preview.innerText = '';
-                    this.setCustomValidity('');
-                    this.removeAttribute('aria-invalid');
+                    preview.innerText = 'This field is required.';
+                    preview.style.color = '';
+                    preview.classList.add('required-star');
+                    this.setCustomValidity('This field is required.');
+                    this.setAttribute('aria-invalid', 'true');
                     return;
                 }
 
@@ -320,11 +331,16 @@ HTML_TEMPLATE = """
                 const preview = document.getElementById('batch_files_preview');
                 input.setCustomValidity('');
                 input.removeAttribute('aria-invalid');
+                preview.classList.remove('required-star');
                 preview.style.color = '#0f6674';
 
                 const files = input.files;
                 if (!files || files.length === 0) {
-                    preview.innerText = '';
+                    preview.innerText = 'This field is required.';
+                    preview.style.color = '';
+                    preview.classList.add('required-star');
+                    input.setCustomValidity('This field is required.');
+                    input.setAttribute('aria-invalid', 'true');
                     return;
                 }
 

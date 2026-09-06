@@ -51,9 +51,9 @@ class EmptyTargetValidationTests(unittest.TestCase):
         empty_marker = "if (this.value === '') {"
         invalid_marker = "if (isNaN(val) || val <= 0) {"
         self.assertIn(empty_marker, handler)
-        self.assertIn("preview.innerText = '';", handler)
-        self.assertIn("this.setCustomValidity('');", handler)
-        self.assertIn("this.removeAttribute('aria-invalid');", handler)
+        self.assertIn("preview.innerText = 'This field is required.';", handler)
+        self.assertIn("this.setCustomValidity('This field is required.');", handler)
+        self.assertIn("this.setAttribute('aria-invalid', 'true');", handler)
         self.assertIn(
             "return;",
             handler[handler.index(empty_marker) : handler.index(invalid_marker)],
