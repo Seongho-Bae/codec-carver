@@ -241,8 +241,10 @@ class TranscriptIndex:
             postings = self._postings.get(term)
             if not postings:
                 return []
+            # Bolt optimization: `&` operator always returns a new set.
+            # Initial assignment without `set()` avoids redundant O(N) allocation.
             candidates = (
-                set(postings) if candidates is None else candidates & postings
+                postings if candidates is None else candidates & postings
             )
             if not candidates:
                 return []
