@@ -1,4 +1,4 @@
-"""Focused contracts for clearing empty target-size validation state."""
+"""Focused contracts for target-size validation feedback state."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ SOURCE_TEXT = (Path(__file__).resolve().parents[1] / "saas_web.py").read_text(
 
 
 class EmptyTargetValidationTests(unittest.TestCase):
-    """Both target-size inputs must clear stale custom validation when emptied."""
+    """Both target-size inputs must expose and then clear required feedback."""
 
     @staticmethod
     def _handler_between(start_marker: str, end_marker: str) -> str:
@@ -46,11 +46,14 @@ class EmptyTargetValidationTests(unittest.TestCase):
         self.assertEqual(SOURCE_TEXT.count("if (this.value === '') {"), 2)
 
     def _assert_empty_branch(self, handler: str) -> None:
-        """Assert one handler sets required feedback state before numeric validation."""
+        """Assert one handler resets stale error state before validating its value."""
 
         empty_marker = "if (this.value === '') {"
         invalid_marker = "if (isNaN(val) || val <= 0) {"
         self.assertIn(empty_marker, handler)
+        reset_prefix = handler[: handler.index(empty_marker)]
+        self.assertIn("preview.classList.remove('error-text');", reset_prefix)
+        self.assertNotIn("preview.classList.remove('required-star');", reset_prefix)
         self.assertIn("preview.innerText = 'This field is required.';", handler)
         self.assertIn("preview.classList.add('error-text');", handler)
         self.assertIn("this.setCustomValidity('This field is required.');", handler)
