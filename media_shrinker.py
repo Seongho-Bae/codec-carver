@@ -2205,8 +2205,8 @@ def _resolve_collision(path: Path, *, overwrite: bool) -> Path:
     if overwrite or not path.exists():
         return path
 
-    # Fast path: Use string operations and lstat inside the tight collision loop
-    # instead of repeated Path instantiations to save object overhead.
+    # Invariant: Only ENOENT proves a candidate is completely free.
+    # Dangling symlinks or files with access errors remain occupied (fail-closed).
     parent_str = str(path.parent)
     stem_str = path.stem
     suffix_str = path.suffix

@@ -227,8 +227,6 @@ class FindCandidateTests(unittest.TestCase):
             nested.write_bytes(b"0" * 4)
 
             import os
-
-            import os
             original_lstat = os.lstat
 
             def flaky_lstat(path):
