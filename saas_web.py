@@ -252,7 +252,7 @@ HTML_TEMPLATE = """
                     const presetValue = Number.parseInt(btn.dataset.bytes, 10);
                     btn.setAttribute(
                         'aria-pressed',
-                        !e.isTrusted && presetValue === val ? 'true' : 'false'
+                        presetValue === val ? 'true' : 'false'
                     );
                 });
 
@@ -286,7 +286,7 @@ HTML_TEMPLATE = """
                     const presetValue = Number.parseInt(btn.dataset.bytes, 10);
                     btn.setAttribute(
                         'aria-pressed',
-                        !e.isTrusted && presetValue === val ? 'true' : 'false'
+                        presetValue === val ? 'true' : 'false'
                     );
                 });
 

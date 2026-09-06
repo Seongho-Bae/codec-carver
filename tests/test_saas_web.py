@@ -368,7 +368,7 @@ class TestSaasWeb(unittest.TestCase):
         self.assertIn(
             "const presetValue = Number.parseInt(btn.dataset.bytes, 10);", html
         )
-        self.assertIn("!e.isTrusted && presetValue === val", html)
+        self.assertIn("presetValue === val", html)
         self.assertNotIn("btn.dataset.bytes === this.value", html)
 
 
