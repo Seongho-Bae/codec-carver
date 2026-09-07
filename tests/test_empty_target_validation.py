@@ -23,7 +23,7 @@ class EmptyTargetValidationTests(unittest.TestCase):
         return SOURCE_TEXT[start:end]
 
     def test_single_target_empty_branch_clears_stale_state(self) -> None:
-        """The single-file target handler clears preview and accessibility state."""
+        """The single-file target handler sets preview and accessibility state."""
 
         handler = self._handler_between(
             "document.getElementById('target_bytes').addEventListener('input'",
@@ -46,14 +46,14 @@ class EmptyTargetValidationTests(unittest.TestCase):
         self.assertEqual(SOURCE_TEXT.count("if (this.value === '') {"), 2)
 
     def _assert_empty_branch(self, handler: str) -> None:
-        """Assert one handler clears stale state before numeric validation."""
+        """Assert one handler sets required state before numeric validation."""
 
         empty_marker = "if (this.value === '') {"
         invalid_marker = "if (isNaN(val) || val <= 0) {"
         self.assertIn(empty_marker, handler)
-        self.assertIn("preview.innerText = '';", handler)
-        self.assertIn("this.setCustomValidity('');", handler)
-        self.assertIn("this.removeAttribute('aria-invalid');", handler)
+        self.assertIn("preview.innerText = 'This field is required.';", handler)
+        self.assertIn("this.setCustomValidity('This field is required.');", handler)
+        self.assertIn("this.setAttribute('aria-invalid', 'true');", handler)
         self.assertIn(
             "return;",
             handler[handler.index(empty_marker) : handler.index(invalid_marker)],
