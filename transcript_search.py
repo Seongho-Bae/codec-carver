@@ -193,12 +193,13 @@ class TranscriptIndex:
         """
         added = 0
         for segment in segments:
+            text = str(_read_attr(segment, "text"))
             entry = _Entry(
                 recording_id=recording_id,
                 start=float(_read_attr(segment, "start")),
                 end=float(_read_attr(segment, "end")),
-                text=str(_read_attr(segment, "text")),
-                counts=Counter(tokenize(str(_read_attr(segment, "text")))),
+                text=text,
+                counts=Counter(tokenize(text)),
             )
             position = len(self._entries)
             self._entries.append(entry)
@@ -242,7 +243,7 @@ class TranscriptIndex:
             if not postings:
                 return []
             candidates = (
-                set(postings) if candidates is None else candidates & postings
+                postings if candidates is None else candidates & postings
             )
             if not candidates:
                 return []
