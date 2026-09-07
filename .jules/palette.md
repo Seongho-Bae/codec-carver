@@ -1,3 +1,11 @@
+## 2024-08-22 - [Palette: CI Failure Ignore]
+**Learning:** CI security scanners (like Strix) may fail due to backend security vulnerabilities (e.g., IDOR) present in the codebase.
+**Action:** As a UX-focused persona (Palette), I must not modify backend logic or fix security vulnerabilities, as this violates persona boundaries. I should revert any out-of-scope changes and resubmit only the UX work.
+
+## 2024-08-04 - 빈 입력 필드에 대한 인라인 유효성 검사 피드백 추가
+**Learning:** 필수 입력 필드(`required`)임에도 불구하고 사용자가 입력된 값을 모두 지워 빈 문자열이 되었을 때, 브라우저의 기본 동작 외에 시각적/스크린 리더 피드백이 조용히 사라지는 UX 결함이 발생할 수 있습니다.
+**Action:** 사용자 정의 검증(JS) 로직을 적용할 때는 빈 문자열 상태를 별도로 확인하여 `setCustomValidity`와 `aria-invalid="true"`를 통해 필수 상태에 대한 명확한 에러 메시지와 시각적 단서(예: 빨간색 테두리 및 텍스트)를 제공해야 합니다.
+
 ## 2024-07-15 - Dynamic Size formatting and Total Size Validation
 **Learning:** Hardcoding human-readable sizes (like '5 GiB') in validation error messages is error-prone when the underlying constant changes. Moreover, failing to validate total upload size against backend limits (e.g., MAX_UPLOAD_BYTES) in batch file uploads frustrates users who wait for a large upload to finish only to get a server-side 413 Payload Too Large error.
 **Action:** Always format backend byte limit constants dynamically (e.g., `formatBinaryBytes(MAX_UPLOAD_BYTES)`) on the client side to display accurate error messages. For multiple file inputs, ensure both the file count and the combined file size are validated against backend limits, giving immediate inline feedback via `setCustomValidity` and `aria-invalid`.

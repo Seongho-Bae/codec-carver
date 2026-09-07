@@ -12,3 +12,4 @@
 ### Fixed
 - 단일·일괄 대상 크기 입력을 비웠을 때 이전 custom validity와 `aria-invalid` 상태를 즉시 초기화해 현재 필수 입력 상태를 정확히 전달합니다.
 - 업로드 파일명의 경로 구분자를 정규화하여 POSIX에서도 Windows 형식의 클라이언트 경로가 일관된 basename으로 기록되도록 수정했습니다.
+- [UX/접근성] 숫자 입력 필드(target bytes)를 빈 값으로 지웠을 때 화면에 'This field is required.'라는 에러 메시지와 함께 붉은색 테두리가 표시되도록 인라인 유효성 검사 피드백을 개선했습니다.
