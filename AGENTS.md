@@ -85,6 +85,25 @@ repo.
   or feature-extraction path.
 <!-- END cwl-agent-guidance -->
 
+## Local OpenCode (NVIDIA NIM only)
+
+ContextualWisdomLab no longer uses GitHub Models. Local OpenCode in this repo
+is NVIDIA NIM only:
+
+- Provider `nvidia-nim` at `https://integrate.api.nvidia.com/v1`
+- Local bind `{env:NVIDIA_API_KEY}` — do **not** rename this to
+  `{env:NVIDIA_NIM_API_KEY}`. The org Actions secret remains
+  `NVIDIA_NIM_API_KEY` and is mapped onto the process alias `NVIDIA_API_KEY`.
+- `enabled_providers`: `["nvidia-nim"]`
+- Default: `nvidia-nim/nvidia/llama-3.3-nemotron-super-49b-v1.5`
+- Small: `nvidia-nim/meta/llama-3.3-70b-instruct`
+- No `COPILOT_GITHUB_TOKEN`, `STRIX_GITHUB_MODELS_TOKEN`, or GitHub Models
+- Do not set OpenAI-style `reasoningEffort`; Nemotron Super reasoning is
+  controlled via the NIM system prompt (`/no_think`), not that knob
+
+See [`docs/doctoring/opencode-nvidia-nim-contract.md`](docs/doctoring/opencode-nvidia-nim-contract.md)
+and [`tests/test_opencode_nvidia_nim_contract.py`](tests/test_opencode_nvidia_nim_contract.py).
+
 ## Code-owner review gates — disabled (on hold)
 
 As of 2026-08-04, code-owner review requirements (`require_code_owner_reviews` in branch
