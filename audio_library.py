@@ -12,6 +12,36 @@ from __future__ import annotations
 import argparse
 import gc
 import errno
+
+class _CleanDefaultsHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
+    """Custom help formatter to hide `None` defaults and show defaults for undocumented options."""
+
+    def _get_help_string(self, action: argparse.Action) -> str | None:
+        if action.default is None or action.default == argparse.SUPPRESS:
+            return action.help
+
+        help_str = action.help
+        if help_str is None:
+            help_str = ""
+
+        if "%(default)" not in help_str:
+            defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
+            if action.option_strings or action.nargs in defaulting_nargs:
+                if help_str:
+                    help_str += " (default: %(default)s)"
+                else:
+                    help_str = "(default: %(default)s)"
+
+        return help_str
+
+    def _format_action(self, action: argparse.Action) -> str:
+        # argparse hides the help text space for actions with NO help.
+        # If we are providing a default, we need to explicitly provide a string.
+        if action.help is None:
+            # Check if this action would get a default string.
+            if action.default is not None and action.default != argparse.SUPPRESS and action.option_strings:
+                action.help = "(default: %(default)s)"
+        return super()._format_action(action)
 import hashlib
 import inspect
 import json
@@ -9587,7 +9617,9 @@ def materialization_progress_line(
 def build_parser() -> argparse.ArgumentParser:
     """Create the command-line adapter around the Python API."""
 
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=_CleanDefaultsHelpFormatter
+    )
     parser.add_argument("root", type=Path)
     parser.add_argument(
         "--state-dir",
@@ -9599,6 +9631,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--backend-binary", type=Path)
     parser.add_argument("--backend-sha256")
+
+    # Propagate the custom formatter to all subparsers using a custom action.
+    class _SubParsersActionWithFormatter(argparse._SubParsersAction):
+        def add_parser(self, name: str, **kwargs) -> argparse.ArgumentParser:
+            if "formatter_class" not in kwargs:
+                kwargs["formatter_class"] = parser.formatter_class
+            return super().add_parser(name, **kwargs)
+
+    parser.register("action", "parsers", _SubParsersActionWithFormatter)
     subparsers = parser.add_subparsers(dest="command", required=True)
     inventory_parser = subparsers.add_parser("inventory")
     inventory_parser.add_argument("--threads", type=int)
