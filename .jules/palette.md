@@ -1,3 +1,7 @@
+## 2024-08-24 - Inline Validation for Required Inputs
+**Learning:** When implementing client-side validation for required form inputs, clearing the input should not silently remove validation feedback. Always explicitly set an inline error message (e.g., 'This field is required.') and set `aria-invalid="true"` to ensure screen readers and users receive clear feedback about the missing required state.
+**Action:** Always ensure client-side validation explicitly handles the empty state for required inputs by providing clear inline error messages and setting `aria-invalid="true"`.
+
 ## 2024-07-15 - Dynamic Size formatting and Total Size Validation
 **Learning:** Hardcoding human-readable sizes (like '5 GiB') in validation error messages is error-prone when the underlying constant changes. Moreover, failing to validate total upload size against backend limits (e.g., MAX_UPLOAD_BYTES) in batch file uploads frustrates users who wait for a large upload to finish only to get a server-side 413 Payload Too Large error.
 **Action:** Always format backend byte limit constants dynamically (e.g., `formatBinaryBytes(MAX_UPLOAD_BYTES)`) on the client side to display accurate error messages. For multiple file inputs, ensure both the file count and the combined file size are validated against backend limits, giving immediate inline feedback via `setCustomValidity` and `aria-invalid`.

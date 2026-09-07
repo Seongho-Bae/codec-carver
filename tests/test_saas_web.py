@@ -58,6 +58,7 @@ class TestSaasWeb(unittest.TestCase):
         self.assertIn("File exceeds ' + limitText + ' limit.", html)
         self.assertIn("Total file size exceeds ' + limitText + ' limit.", html)
         self.assertIn("preview.style.color = '#0f6674';", html)
+        self.assertIn("This field is required.", html)
         self.assertIn('onchange="updateFileSizePreview(this)"', html)
 
     def test_security_headers_present_without_plain_http_hsts(self):
