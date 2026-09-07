@@ -1,3 +1,7 @@
+## 2024-08-25 - 필수 필드의 빈 문자열 상태에 명시적 검증 오류 표시
+**Learning:** 파일 크기나 바이트 수 입력과 같은 필수(required) 입력 폼에서 빈 값으로 상태가 변경될 때, 사용자에게 명시적으로 에러 메시지를 제공하지 않고 암시적으로 상태를 초기화하면 접근성 및 사용자 경험에 좋지 않습니다.
+**Action:** 스크립트로 상태를 관리할 때 필수 입력 항목이 빈 값으로 변경되면, 텍스트 프리뷰에 에러 메시지를 노출하고 CSS 스타일링 및 `aria-invalid` 속성을 활용해 화면 해설기와 시각적 사용자 모두에게 명확히 피드백을 전달하십시오.
+
 ## 2024-07-15 - Dynamic Size formatting and Total Size Validation
 **Learning:** Hardcoding human-readable sizes (like '5 GiB') in validation error messages is error-prone when the underlying constant changes. Moreover, failing to validate total upload size against backend limits (e.g., MAX_UPLOAD_BYTES) in batch file uploads frustrates users who wait for a large upload to finish only to get a server-side 413 Payload Too Large error.
 **Action:** Always format backend byte limit constants dynamically (e.g., `formatBinaryBytes(MAX_UPLOAD_BYTES)`) on the client side to display accurate error messages. For multiple file inputs, ensure both the file count and the combined file size are validated against backend limits, giving immediate inline feedback via `setCustomValidity` and `aria-invalid`.
