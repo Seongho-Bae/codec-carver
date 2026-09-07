@@ -121,7 +121,7 @@ class UsageStore:
         self._lock = threading.Lock()
         with closing(self._connect()) as conn:
             with conn:
-                conn.execute(_SCHEMA)
+                conn.executescript("PRAGMA journal_mode=WAL;\n" + _SCHEMA)
 
     def _connect(self) -> sqlite3.Connection:
         """Open a new short-lived connection with WAL mode enabled.
@@ -130,7 +130,6 @@ class UsageStore:
             A fresh :class:`sqlite3.Connection` to the store's database.
         """
         conn = sqlite3.connect(self._db_path, timeout=30.0)
-        conn.execute("PRAGMA journal_mode=WAL")
         return conn
 
     def record(
