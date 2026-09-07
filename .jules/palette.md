@@ -1,3 +1,7 @@
+## 2026-08-18 - 시각적인 필수 입력(required) 알림 피드백 강화
+**Learning:** 사용자가 필수 입력 필드의 내용을 지웠을 때 시각적으로 아무런 피드백이나 에러 문구가 없다면 값이 비워졌음에도 올바른 상태라고 착각할 수 있습니다. 스크린 리더와 일반 사용자 모두에게 명확히 전달되도록 유효성 검사 메시지를 제공하고 `aria-invalid`를 설정해야 합니다.
+**Action:** 필수 입력 폼에서 빈 문자열로 인해 유효성 에러를 초기화할 때, 암묵적으로 지우는 대신 'This field is required.'라는 인라인 에러 메시지와 함께 `aria-invalid='true'`를 명시적으로 설정하여 누락된 필수 상태에 대해 사용자에게 명확하게 피드백합니다.
+
 ## 2024-07-15 - Dynamic Size formatting and Total Size Validation
 **Learning:** Hardcoding human-readable sizes (like '5 GiB') in validation error messages is error-prone when the underlying constant changes. Moreover, failing to validate total upload size against backend limits (e.g., MAX_UPLOAD_BYTES) in batch file uploads frustrates users who wait for a large upload to finish only to get a server-side 413 Payload Too Large error.
 **Action:** Always format backend byte limit constants dynamically (e.g., `formatBinaryBytes(MAX_UPLOAD_BYTES)`) on the client side to display accurate error messages. For multiple file inputs, ensure both the file count and the combined file size are validated against backend limits, giving immediate inline feedback via `setCustomValidity` and `aria-invalid`.

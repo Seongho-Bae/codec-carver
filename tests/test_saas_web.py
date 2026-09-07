@@ -47,6 +47,11 @@ class TestSaasWeb(unittest.TestCase):
         self.assertIn('id="file_help"', html)
         self.assertIn('class="required-star" aria-hidden="true"', html)
 
+    def test_get_ui_includes_required_field_validation_feedback(self):
+        response = client.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("This field is required.", response.text)
+
     def test_get_ui_includes_binary_file_size_validation(self):
         response = client.get("/")
         self.assertEqual(response.status_code, 200)
