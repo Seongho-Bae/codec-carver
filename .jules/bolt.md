@@ -67,3 +67,6 @@
 ## 2025-02-12 - [Fast Path Execution in Directory Traversal and Log Parsing]
 **Learning:** Checking for string existence (`if "silence_" not in stderr`) before invoking regex matchers provides significant speed improvements when parsing large blocks of text. Similarly, moving expensive I/O operations like `os.path.realpath` inside conditional blocks prevents redundant disk access when configuration (like path exclusions) isn't utilized.
 **Action:** When working on large text processing or disk operations, verify if early exit conditions or conditional execution can bypass the expensive system or library calls.
+## 2024-06-25 - [Optimize tokenize by applying fast path on split tokens]
+**학습:** 긴 문자열 전체에 대해 `str.isalnum()` 검사를 수행하는 빠른 경로(fast path)는 문자열 내에 띄어쓰기나 구두점이 하나라도 포함되어 있으면 항상 실패하므로 비효율적입니다. 정규식 오버헤드를 줄이려면 먼저 문자열을 분할(`split()`)한 다음, 개별 토큰에 대해 `isalnum()` 검사를 적용해야 합니다.
+**실행:** 정규식으로 비단어 문자를 처리할 때 빠른 경로 최적화를 적용하려면, 다중 단어 문자열 전체가 아닌 분할된 개별 단어 토큰 단위로 `isalnum()` 검사를 적용하도록 최적화하세요.
