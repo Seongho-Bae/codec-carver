@@ -178,7 +178,7 @@ HTML_TEMPLATE = """
             </p>
             <p>
                 <label for="target_bytes">Target Bytes: <span class="required-star" aria-hidden="true">*</span></label><br>
-                <input type="number" id="target_bytes" name="target_bytes" value="2000000000" min="1" aria-describedby="target_bytes_help target_bytes_preview" required>
+                <input type="number" id="target_bytes" name="target_bytes" value="2000000000" min="1" max="5368709120" aria-describedby="target_bytes_help target_bytes_preview" required>
                 <br><span id="target_bytes_help" class="help-text">Maximum allowed file size in bytes (e.g., 2000000000 for ~1.86 GiB)</span>
                 <br><span id="target_bytes_preview" class="help-text" aria-live="polite" style="font-weight: bold; color: #1e7e34;">1.86 GiB</span>
                 <div id="preset_buttons_container" class="preset-container" role="group" aria-label="Preset target sizes">
@@ -190,7 +190,33 @@ HTML_TEMPLATE = """
             </p>
             <button type="submit" id="submit-btn">Upload and Shrink</button>
         </form>
-        <script>
+
+    </div>
+    <div class="box" id="batch-drop-zone" style="margin-top: 20px;">
+        <h2>Shrink Multiple Files</h2>
+        <form action="/shrink-batch" method="post" enctype="multipart/form-data" id="shrink-batch-form">
+            <p>
+                <label for="batch_files">Media Files (up to 20): <span class="required-star" aria-hidden="true">*</span></label><br>
+                <input type="file" id="batch_files" name="files" accept="audio/*,video/*" multiple aria-describedby="batch_files_help batch_files_preview" required onchange="updateBatchFilePreview(this)">
+                <br><span id="batch_files_help" class="help-text">Select several audio or video files, or drag and drop them here. You get back one zip with every output plus a results.json manifest.</span>
+                <br><span id="batch_files_preview" class="help-text" aria-live="polite" style="font-weight: bold; color: #0f6674;"></span>
+            </p>
+            <p>
+                <label for="batch_target_bytes">Target Bytes (per file): <span class="required-star" aria-hidden="true">*</span></label><br>
+                <input type="number" id="batch_target_bytes" name="target_bytes" value="2000000000" min="1" max="5368709120" aria-describedby="batch_target_bytes_help batch_target_bytes_preview" required>
+                <br><span id="batch_target_bytes_help" class="help-text">Maximum allowed size in bytes for each output file</span>
+                <br><span id="batch_target_bytes_preview" class="help-text" aria-live="polite" style="font-weight: bold; color: #1e7e34;">1.86 GiB</span>
+                <div id="batch_preset_buttons_container" class="preset-container" role="group" aria-label="Preset target sizes for batch">
+                    <button type="button" class="preset-btn" data-bytes="26214400" aria-pressed="false">25 MiB</button>
+                    <button type="button" class="preset-btn" data-bytes="104857600" aria-pressed="false">100 MiB</button>
+                    <button type="button" class="preset-btn" data-bytes="524288000" aria-pressed="false">500 MiB</button>
+                    <button type="button" class="preset-btn" data-bytes="1073741824" aria-pressed="false">1 GiB</button>
+                </div>
+            </p>
+            <button type="submit" id="batch-submit-btn">Upload and Shrink Batch</button>
+        </form>
+    </div>
+<script>
             const MAX_UPLOAD_BYTES = 5 * 1024 * 1024 * 1024;
             function formatBinaryBytes(value) {
                 const units = ['B', 'KiB', 'MiB', 'GiB'];
@@ -268,6 +294,12 @@ HTML_TEMPLATE = """
                     preview.style.color = '#dc3545';
                     this.setCustomValidity('Must be greater than 0.');
                     this.setAttribute('aria-invalid', 'true');
+                } else if (val > MAX_UPLOAD_BYTES) {
+                    const limitText = formatBinaryBytes(MAX_UPLOAD_BYTES);
+                    preview.innerText = 'Exceeds maximum limit of ' + limitText + '.';
+                    preview.style.color = '#dc3545';
+                    this.setCustomValidity('Exceeds maximum limit of ' + limitText + '.');
+                    this.setAttribute('aria-invalid', 'true');
                 } else {
                     preview.innerText = formatBinaryBytes(val);
                 }
@@ -301,6 +333,12 @@ HTML_TEMPLATE = """
                     preview.innerText = 'Must be greater than 0.';
                     preview.style.color = '#dc3545';
                     this.setCustomValidity('Must be greater than 0.');
+                    this.setAttribute('aria-invalid', 'true');
+                } else if (val > MAX_UPLOAD_BYTES) {
+                    const limitText = formatBinaryBytes(MAX_UPLOAD_BYTES);
+                    preview.innerText = 'Exceeds maximum limit of ' + limitText + '.';
+                    preview.style.color = '#dc3545';
+                    this.setCustomValidity('Exceeds maximum limit of ' + limitText + '.');
                     this.setAttribute('aria-invalid', 'true');
                 } else {
                     preview.innerText = formatBinaryBytes(val);
@@ -404,31 +442,6 @@ HTML_TEMPLATE = """
             }, false);
         }
         </script>
-    </div>
-    <div class="box" id="batch-drop-zone" style="margin-top: 20px;">
-        <h2>Shrink Multiple Files</h2>
-        <form action="/shrink-batch" method="post" enctype="multipart/form-data" id="shrink-batch-form">
-            <p>
-                <label for="batch_files">Media Files (up to 20): <span class="required-star" aria-hidden="true">*</span></label><br>
-                <input type="file" id="batch_files" name="files" accept="audio/*,video/*" multiple aria-describedby="batch_files_help batch_files_preview" required onchange="updateBatchFilePreview(this)">
-                <br><span id="batch_files_help" class="help-text">Select several audio or video files, or drag and drop them here. You get back one zip with every output plus a results.json manifest.</span>
-                <br><span id="batch_files_preview" class="help-text" aria-live="polite" style="font-weight: bold; color: #0f6674;"></span>
-            </p>
-            <p>
-                <label for="batch_target_bytes">Target Bytes (per file): <span class="required-star" aria-hidden="true">*</span></label><br>
-                <input type="number" id="batch_target_bytes" name="target_bytes" value="2000000000" min="1" aria-describedby="batch_target_bytes_help batch_target_bytes_preview" required>
-                <br><span id="batch_target_bytes_help" class="help-text">Maximum allowed size in bytes for each output file</span>
-                <br><span id="batch_target_bytes_preview" class="help-text" aria-live="polite" style="font-weight: bold; color: #1e7e34;">1.86 GiB</span>
-                <div id="batch_preset_buttons_container" class="preset-container" role="group" aria-label="Preset target sizes for batch">
-                    <button type="button" class="preset-btn" data-bytes="26214400" aria-pressed="false">25 MiB</button>
-                    <button type="button" class="preset-btn" data-bytes="104857600" aria-pressed="false">100 MiB</button>
-                    <button type="button" class="preset-btn" data-bytes="524288000" aria-pressed="false">500 MiB</button>
-                    <button type="button" class="preset-btn" data-bytes="1073741824" aria-pressed="false">1 GiB</button>
-                </div>
-            </p>
-            <button type="submit" id="batch-submit-btn">Upload and Shrink Batch</button>
-        </form>
-    </div>
 </body>
 </html>
 """
