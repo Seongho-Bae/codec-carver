@@ -67,3 +67,8 @@
 ## 2025-02-12 - [Fast Path Execution in Directory Traversal and Log Parsing]
 **Learning:** Checking for string existence (`if "silence_" not in stderr`) before invoking regex matchers provides significant speed improvements when parsing large blocks of text. Similarly, moving expensive I/O operations like `os.path.realpath` inside conditional blocks prevents redundant disk access when configuration (like path exclusions) isn't utilized.
 **Action:** When working on large text processing or disk operations, verify if early exit conditions or conditional execution can bypass the expensive system or library calls.
+## 2024-08-24 - Python set intersection and generator optimization in tight loops
+**Learning:**
+1. The `&` operator in Python creates a new set natively. Creating a defensive copy (`set(postings)`) on the first iteration of a reducing intersection loop adds unnecessary O(N) overhead.
+2. In tight inner loops, `sum(generator_expression)` is significantly slower than an explicit `for` loop because of generator instantiation and `next()` function call overheads.
+**Action:** When performing set intersections iteratively, directly reference the first set. Replace generator expressions in performance-critical tight loops with explicit `for` loops.
