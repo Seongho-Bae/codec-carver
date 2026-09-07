@@ -1063,7 +1063,7 @@ def safe_source_size(source: Path) -> int:
     """Return source size for reports without letting stat failures abort a batch."""
 
     try:
-        return Path(source).stat().st_size
+        return source.stat().st_size
     except OSError:
         return 0
 

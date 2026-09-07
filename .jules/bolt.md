@@ -1,3 +1,7 @@
+## 2024-08-26 - [Remove redundant Path instantiation]
+**Learning:** In a function where the argument is already annotated and expected to be a `Path` object (like `source: Path`), wrapping it again with `Path(source)` inside a `try/except` block introduces unnecessary object instantiation overhead.
+**Action:** Avoid redundant `Path` wrapping when the variable is already a `pathlib.Path` instance.
+
 ## 2024-05-28 - Avoid O(N^2) Path.resolve() in Batch Processing
 **Learning:** Python's `pathlib.Path.resolve()` is relatively slow because it touches the filesystem to follow symlinks and resolve relative paths. When dealing with a batch operation (e.g., scanning large directories of media files), calculating protected files via `any(target == src.resolve() for src in sources)` on every check leads to massive O(N^2) CPU overhead.
 **Action:** Pre-resolve the entire list of candidate paths once into a `frozenset` at the beginning of the batch process. Pass this resolved set down the call stack so that collision/protection checks become O(1) hash map lookups instead of triggering millions of unnecessary disk access operations.
