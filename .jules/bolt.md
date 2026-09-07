@@ -1,3 +1,7 @@
+## 2025-02-13 - [단기 SQLite 연결을 위한 WAL PRAGMA 최적화]
+**Learning:** SQLite의 `PRAGMA journal_mode=WAL`은 데이터베이스 파일마다 영구적으로 유지됩니다. 많은 수명이 짧은 연결을 사용하는 애플리케이션에서 매 연결마다 중복으로 실행하면 CPU 사이클을 낭비하고 오버헤드가 추가됩니다.
+**Action:** `PRAGMA journal_mode=WAL`을 연결을 열 때마다 실행하는 대신 데이터베이스 초기화 시 한 번만 실행합니다 (예: `conn.executescript("PRAGMA journal_mode=WAL;\n" + _SCHEMA)` 사용).
+
 ## 2024-05-28 - Avoid O(N^2) Path.resolve() in Batch Processing
 **Learning:** Python's `pathlib.Path.resolve()` is relatively slow because it touches the filesystem to follow symlinks and resolve relative paths. When dealing with a batch operation (e.g., scanning large directories of media files), calculating protected files via `any(target == src.resolve() for src in sources)` on every check leads to massive O(N^2) CPU overhead.
 **Action:** Pre-resolve the entire list of candidate paths once into a `frozenset` at the beginning of the batch process. Pass this resolved set down the call stack so that collision/protection checks become O(1) hash map lookups instead of triggering millions of unnecessary disk access operations.
