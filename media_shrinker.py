@@ -653,7 +653,13 @@ def _run_media_tool(
     timeout: float | None = None,
     timeout_message: str | None = None,
 ) -> "subprocess.CompletedProcess[str]":
-    """Run an ffmpeg/ffprobe command, mapping missing binaries clearly."""
+    """Run an ffmpeg/ffprobe command, mapping missing binaries clearly.
+
+    ffmpeg/ffprobe echo source-file metadata into their output. Those
+    attacker-influenceable legacy-encoded bytes may not be valid UTF-8.
+    Replacement decoding preserves the ASCII parser structure while preventing
+    an untrusted metadata byte from raising ``UnicodeDecodeError``.
+    """
 
     try:
         return subprocess.run(
@@ -661,6 +667,8 @@ def _run_media_tool(
             check=False,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             shell=False,
             timeout=timeout,
         )
