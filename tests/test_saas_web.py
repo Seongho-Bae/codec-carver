@@ -51,6 +51,10 @@ class TestSaasWeb(unittest.TestCase):
         response = client.get("/")
         self.assertEqual(response.status_code, 200)
         html = response.text
+        self.assertIn("preview.innerText = 'This field is required.';", html)
+        self.assertIn("preview.style.color = '#dc3545';", html)
+        self.assertIn("input.setCustomValidity('This field is required.');", html)
+        self.assertIn("input.setAttribute('aria-invalid', 'true');", html)
 
         self.assertIn("const MAX_UPLOAD_BYTES = 5 * 1024 * 1024 * 1024;", html)
         self.assertIn("['B', 'KiB', 'MiB', 'GiB']", html)
@@ -313,6 +317,7 @@ class TestSaasWeb(unittest.TestCase):
         response = client.get("/")
         self.assertEqual(response.status_code, 200)
         html = response.text
+        self.assertIn("preview.innerText = 'This field is required.';", html)
         self.assertIn("preview.innerText = 'Must be greater than 0.';", html)
         self.assertIn("preview.style.color = '#dc3545';", html)
 
