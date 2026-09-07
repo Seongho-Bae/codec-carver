@@ -57,6 +57,7 @@ class TestSaasWeb(unittest.TestCase):
         self.assertIn("const limitText = formatBinaryBytes(MAX_UPLOAD_BYTES);", html)
         self.assertIn("File exceeds ' + limitText + ' limit.", html)
         self.assertIn("Total file size exceeds ' + limitText + ' limit.", html)
+        self.assertIn("Exceeds ' + limitText + ' limit.", html)
         self.assertIn("preview.style.color = '#0f6674';", html)
         self.assertIn('onchange="updateFileSizePreview(this)"', html)
 

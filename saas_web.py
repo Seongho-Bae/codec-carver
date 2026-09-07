@@ -268,6 +268,12 @@ HTML_TEMPLATE = """
                     preview.style.color = '#dc3545';
                     this.setCustomValidity('Must be greater than 0.');
                     this.setAttribute('aria-invalid', 'true');
+                } else if (val > MAX_UPLOAD_BYTES) {
+                    const limitText = formatBinaryBytes(MAX_UPLOAD_BYTES);
+                    preview.innerText = 'Exceeds ' + limitText + ' limit.';
+                    preview.style.color = '#dc3545';
+                    this.setCustomValidity('Exceeds ' + limitText + ' limit.');
+                    this.setAttribute('aria-invalid', 'true');
                 } else {
                     preview.innerText = formatBinaryBytes(val);
                 }
@@ -301,6 +307,12 @@ HTML_TEMPLATE = """
                     preview.innerText = 'Must be greater than 0.';
                     preview.style.color = '#dc3545';
                     this.setCustomValidity('Must be greater than 0.');
+                    this.setAttribute('aria-invalid', 'true');
+                } else if (val > MAX_UPLOAD_BYTES) {
+                    const limitText = formatBinaryBytes(MAX_UPLOAD_BYTES);
+                    preview.innerText = 'Exceeds ' + limitText + ' limit.';
+                    preview.style.color = '#dc3545';
+                    this.setCustomValidity('Exceeds ' + limitText + ' limit.');
                     this.setAttribute('aria-invalid', 'true');
                 } else {
                     preview.innerText = formatBinaryBytes(val);

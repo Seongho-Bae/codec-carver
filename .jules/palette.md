@@ -1,3 +1,7 @@
+## 2026-08-21 - Client-side validation for maximum target bytes
+**Learning:** While `min` constraints and negative value checks were present on the target bytes inputs, the upper bound (maximum allowed size) was only enforced on the backend, leading to confusing generic server errors if a user entered an excessively large number. Validating the upper bound client-side with a human-readable byte format prevents unnecessary server requests and provides immediate, contextual feedback.
+**Action:** Always implement client-side upper-bound validations that match backend limits for numeric inputs, especially when dealing with byte sizes, and format the error messages using human-readable units.
+
 ## 2024-07-15 - Dynamic Size formatting and Total Size Validation
 **Learning:** Hardcoding human-readable sizes (like '5 GiB') in validation error messages is error-prone when the underlying constant changes. Moreover, failing to validate total upload size against backend limits (e.g., MAX_UPLOAD_BYTES) in batch file uploads frustrates users who wait for a large upload to finish only to get a server-side 413 Payload Too Large error.
 **Action:** Always format backend byte limit constants dynamically (e.g., `formatBinaryBytes(MAX_UPLOAD_BYTES)`) on the client side to display accurate error messages. For multiple file inputs, ensure both the file count and the combined file size are validated against backend limits, giving immediate inline feedback via `setCustomValidity` and `aria-invalid`.
