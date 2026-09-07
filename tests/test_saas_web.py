@@ -1173,6 +1173,31 @@ class JobModelTests(unittest.TestCase):
         self.assertFalse(temp_dir.exists())
         self.assertIsNone(saas_web.JOB_STORE.get("c"))
 
+    @patch("saas_web._cleanup_job")
+    @patch("saas_web._get_job_store")
+    def test_cleanup_expired_jobs(self, mock_get_store, mock_cleanup):
+        from datetime import datetime, timezone, timedelta
+        mock_store = MagicMock()
+        mock_get_store.return_value = mock_store
+
+        now = datetime.now(timezone.utc)
+        past_time_1 = (now - timedelta(hours=25)).isoformat()
+        past_time_2 = (now - timedelta(hours=10)).isoformat()
+
+        mock_store.list_jobs.return_value = [
+            {"id": "job_1", "status": "done", "updated_at": past_time_1},
+            {"id": "job_2", "status": "done", "updated_at": past_time_2},
+            {"id": "job_3", "status": "processing", "updated_at": past_time_1},
+            {"id": "job_4", "status": "failed", "updated_at": past_time_1},
+            {"id": "job_5", "status": "failed", "updated_at": "invalid-time"},
+        ]
+
+        saas_web._cleanup_expired_jobs()
+
+        mock_cleanup.assert_any_call("job_1")
+        mock_cleanup.assert_any_call("job_4")
+        self.assertEqual(mock_cleanup.call_count, 2)
+
     def test_cleanup_job_tolerates_unknown_job(self):
         saas_web._cleanup_job("unknown-cleanup-job")
         self.assertIsNone(saas_web.JOB_STORE.get("unknown-cleanup-job"))

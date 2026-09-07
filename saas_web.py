@@ -797,6 +797,20 @@ def _run_job(
         cleanup_temp_dir(temp_dir_path)
 
 
+def _cleanup_expired_jobs() -> None:
+    """Remove jobs and their temporary workspaces that have been finished for over 24 hours."""
+    from datetime import timedelta
+    store = _get_job_store()
+    now = _now()
+    for job in store.list_jobs():
+        if job["status"] in ("done", "failed"):
+            try:
+                updated_at = datetime.fromisoformat(job["updated_at"])
+                if now - updated_at > timedelta(hours=24):
+                    _cleanup_job(job["id"])
+            except Exception:
+                logger.exception("Failed to parse updated_at for job %s", job["id"])
+
 @app.post("/jobs")
 def submit_job(
     background_tasks: BackgroundTasks,
@@ -804,6 +818,7 @@ def submit_job(
     target_bytes: int = Form(2_000_000_000),
 ):
     """Enqueue a shrink job and return its id for asynchronous status polling."""
+    background_tasks.add_task(_cleanup_expired_jobs)
     error = _validate_request(file, target_bytes)
     if error is not None:
         return JSONResponse(status_code=400, content={"error": error})
