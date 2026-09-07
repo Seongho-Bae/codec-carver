@@ -67,3 +67,6 @@
 ## 2025-02-12 - [Fast Path Execution in Directory Traversal and Log Parsing]
 **Learning:** Checking for string existence (`if "silence_" not in stderr`) before invoking regex matchers provides significant speed improvements when parsing large blocks of text. Similarly, moving expensive I/O operations like `os.path.realpath` inside conditional blocks prevents redundant disk access when configuration (like path exclusions) isn't utilized.
 **Action:** When working on large text processing or disk operations, verify if early exit conditions or conditional execution can bypass the expensive system or library calls.
+## 2026-08-20 - [불필요한 Set 복사 제거 및 제너레이터 최적화]
+**학습:** 파이썬에서 루프 내의 집합(Set) 교집합 연산(`&`)은 항상 새로운 집합을 반환하므로, 원본 집합에 대해 방어적 복사(`set(postings)`)를 수행하는 것은 불필요하며 O(N)의 성능 병목을 일으킵니다. 또한 성능에 민감한 루프에서 제너레이터 표현식(`sum(...)`) 대신 명시적인 `for` 루프를 사용하면 제너레이터 초기화 및 `next()` 호출 오버헤드를 피할 수 있어 실행 속도가 크게 향상됩니다.
+**실행:** 집합 연산을 수행할 때 이미 새로운 객체가 생성되는 경우 불필요한 복사를 제거하고, 속도가 중요한 반복문 내에서는 제너레이터 대신 명시적인 루프를 사용하여 오버헤드를 줄여야 합니다.
