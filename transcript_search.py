@@ -241,8 +241,11 @@ class TranscriptIndex:
             postings = self._postings.get(term)
             if not postings:
                 return []
+            # Optimization: postings is already a set. Directly referencing it
+            # avoids an expensive O(N) copy, since subsequent intersections (`&`)
+            # will natively return new set objects without mutating the original.
             candidates = (
-                set(postings) if candidates is None else candidates & postings
+                postings if candidates is None else candidates & postings
             )
             if not candidates:
                 return []
@@ -250,7 +253,11 @@ class TranscriptIndex:
         matches = []
         for position in candidates or ():
             entry = self._entries[position]
-            score = sum(entry.counts[term] for term in unique_terms)
+            # Optimization: Replaced `sum(gen_expr)` with an explicit loop to eliminate
+            # the overhead of generator instantiation and `next()` calls in this hot path.
+            score = 0
+            for term in unique_terms:
+                score += entry.counts[term]
             matches.append(
                 Match(
                     recording_id=entry.recording_id,
