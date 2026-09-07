@@ -1,0 +1,19 @@
+--- tests/test_saas_web.py
++++ tests/test_saas_web.py
+@@ -58,6 +58,16 @@
+         self.assertIn('onchange="updateBatchFilePreview(this)"', html)
+         self.assertIn('id="batch_files_preview"', html)
+         self.assertIn("function updateBatchFilePreview(input)", html)
++
++    def test_get_ui_includes_required_validation(self):
++        response = client.get("/")
++        self.assertEqual(response.status_code, 200)
++        html = response.text
++
++        # Test that required field logic is verified via presence of aria-invalid when empty
++        self.assertIn("preview.innerText = 'This field is required.';", html)
++        self.assertIn("input.setCustomValidity('This field is required.');", html)
++        self.assertEqual(html.count("preview.innerText = 'This field is required.';"), 4)
+
+     def test_get_ui_includes_drag_and_drop_zones(self):
+         response = client.get("/")

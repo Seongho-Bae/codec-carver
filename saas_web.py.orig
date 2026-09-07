@@ -225,10 +225,7 @@ HTML_TEMPLATE = """
                 input.removeAttribute('aria-invalid');
                 preview.style.color = '#0f6674';
                 if (!file) {
-                    preview.innerText = 'This field is required.';
-                    preview.style.color = '#dc3545';
-                    input.setCustomValidity('This field is required.');
-                    input.setAttribute('aria-invalid', 'true');
+                    preview.innerText = '';
                     return;
                 }
                 const text = formatBinaryBytes(file.size);
@@ -260,10 +257,9 @@ HTML_TEMPLATE = """
                 });
 
                 if (this.value === '') {
-                    preview.innerText = 'This field is required.';
-                    preview.style.color = '#dc3545';
-                    this.setCustomValidity('This field is required.');
-                    this.setAttribute('aria-invalid', 'true');
+                    preview.innerText = '';
+                    this.setCustomValidity('');
+                    this.removeAttribute('aria-invalid');
                     return;
                 }
 
@@ -295,10 +291,9 @@ HTML_TEMPLATE = """
                 });
 
                 if (this.value === '') {
-                    preview.innerText = 'This field is required.';
-                    preview.style.color = '#dc3545';
-                    this.setCustomValidity('This field is required.');
-                    this.setAttribute('aria-invalid', 'true');
+                    preview.innerText = '';
+                    this.setCustomValidity('');
+                    this.removeAttribute('aria-invalid');
                     return;
                 }
 
@@ -329,10 +324,7 @@ HTML_TEMPLATE = """
 
                 const files = input.files;
                 if (!files || files.length === 0) {
-                    preview.innerText = 'This field is required.';
-                    preview.style.color = '#dc3545';
-                    input.setCustomValidity('This field is required.');
-                    input.setAttribute('aria-invalid', 'true');
+                    preview.innerText = '';
                     return;
                 }
 

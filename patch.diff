@@ -1,0 +1,53 @@
+--- saas_web.py
++++ saas_web.py
+@@ -226,7 +226,10 @@
+                 input.removeAttribute('aria-invalid');
+                 preview.style.color = '#0f6674';
+                 if (!file) {
+-                    preview.innerText = '';
++                    preview.innerText = 'This field is required.';
++                    preview.style.color = '#dc3545';
++                    input.setCustomValidity('This field is required.');
++                    input.setAttribute('aria-invalid', 'true');
+                     return;
+                 }
+                 const text = formatBinaryBytes(file.size);
+@@ -257,9 +260,10 @@
+                 });
+
+                 if (this.value === '') {
+-                    preview.innerText = '';
+-                    this.setCustomValidity('');
+-                    this.removeAttribute('aria-invalid');
++                    preview.innerText = 'This field is required.';
++                    preview.style.color = '#dc3545';
++                    this.setCustomValidity('This field is required.');
++                    this.setAttribute('aria-invalid', 'true');
+                     return;
+                 }
+
+@@ -288,9 +292,10 @@
+                 });
+
+                 if (this.value === '') {
+-                    preview.innerText = '';
+-                    this.setCustomValidity('');
+-                    this.removeAttribute('aria-invalid');
++                    preview.innerText = 'This field is required.';
++                    preview.style.color = '#dc3545';
++                    this.setCustomValidity('This field is required.');
++                    this.setAttribute('aria-invalid', 'true');
+                     return;
+                 }
+
+@@ -321,7 +326,10 @@
+
+                 const files = input.files;
+                 if (!files || files.length === 0) {
+-                    preview.innerText = '';
++                    preview.innerText = 'This field is required.';
++                    preview.style.color = '#dc3545';
++                    input.setCustomValidity('This field is required.');
++                    input.setAttribute('aria-invalid', 'true');
+                     return;
+                 }

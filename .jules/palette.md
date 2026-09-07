@@ -1,3 +1,6 @@
+## 2024-05-24 - Inline Validation for Required Inputs
+**Learning:** Emptying a required input without clear validation feedback leaves screen readers and visual users confused, especially when aria-invalid is removed.
+**Action:** Ensure inline validation messages are explicitly set and `aria-invalid` is properly toggled to `true` when a required field is cleared.
 ## 2024-07-15 - Dynamic Size formatting and Total Size Validation
 **Learning:** Hardcoding human-readable sizes (like '5 GiB') in validation error messages is error-prone when the underlying constant changes. Moreover, failing to validate total upload size against backend limits (e.g., MAX_UPLOAD_BYTES) in batch file uploads frustrates users who wait for a large upload to finish only to get a server-side 413 Payload Too Large error.
 **Action:** Always format backend byte limit constants dynamically (e.g., `formatBinaryBytes(MAX_UPLOAD_BYTES)`) on the client side to display accurate error messages. For multiple file inputs, ensure both the file count and the combined file size are validated against backend limits, giving immediate inline feedback via `setCustomValidity` and `aria-invalid`.
