@@ -35,6 +35,8 @@ from pathlib import Path
 __all__ = ["QuotaExceededError", "UsageStore"]
 
 _SCHEMA = """
+-- 데이터베이스 초기화 시 WAL 모드를 한 번만 설정하여 짧은 연결의 오버헤드를 줄입니다.
+PRAGMA journal_mode=WAL;
 CREATE TABLE IF NOT EXISTS usage (
     api_key TEXT NOT NULL,
     period TEXT NOT NULL,
@@ -121,7 +123,7 @@ class UsageStore:
         self._lock = threading.Lock()
         with closing(self._connect()) as conn:
             with conn:
-                conn.execute(_SCHEMA)
+                conn.executescript(_SCHEMA)
 
     def _connect(self) -> sqlite3.Connection:
         """Open a new short-lived connection with WAL mode enabled.
@@ -130,7 +132,6 @@ class UsageStore:
             A fresh :class:`sqlite3.Connection` to the store's database.
         """
         conn = sqlite3.connect(self._db_path, timeout=30.0)
-        conn.execute("PRAGMA journal_mode=WAL")
         return conn
 
     def record(

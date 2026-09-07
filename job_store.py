@@ -35,6 +35,8 @@ from datetime import datetime
 VALID_STATUSES = frozenset({"queued", "processing", "done", "failed"})
 
 _SCHEMA = """
+-- 데이터베이스 초기화 시 WAL 모드를 한 번만 설정하여 짧은 연결의 오버헤드를 줄입니다.
+PRAGMA journal_mode=WAL;
 CREATE TABLE IF NOT EXISTS jobs (
     id          TEXT PRIMARY KEY,
     status      TEXT NOT NULL,
@@ -95,7 +97,7 @@ class JobStore:
         self._db_path = str(db_path)
         self._lock = threading.Lock()
         with self._connect() as conn:
-            conn.execute(_SCHEMA)
+            conn.executescript(_SCHEMA)
 
     @contextmanager
     def _connect(self) -> Iterator[sqlite3.Connection]:
@@ -108,7 +110,6 @@ class JobStore:
         conn = sqlite3.connect(self._db_path, timeout=30.0)
         try:
             conn.row_factory = sqlite3.Row
-            conn.execute("PRAGMA journal_mode=WAL")
             yield conn
             conn.commit()
         finally:
